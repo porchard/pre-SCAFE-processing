@@ -22,7 +22,9 @@ ONT has published an example ONT-sequenced 10x Genomics 3' GEX dataset here: htt
 
 If you have `aws` CLI tool on your machine, you can download a portion of their (processed) dataset, which includes the BAM file, as follows:
 
+```
 aws s3 sync --no-sign-request s3://ont-open-data/sc_gemx_2025.02/analysis/workflow_outputs/293t/293t_1_1/PBC16207_20250123_293t_1_1 PBC16207_20250123_293t_1_1
+```
 
 ## Dependencies
 
@@ -32,7 +34,9 @@ You must have NextFlow and Singularity installed. NextFlow should be configured 
 
 The NextFlow pipeline needs only the ONT BAM file as input. With the example dataset, the preprocessing can be run as follows:
 
-```nextflow run -resume --results results --bam_glob '/path/to/PBC16207_20250123_293t_1_1/PBC16207_20250123_293t_1_1.tagged.bam' /path/to/main.nf```
+```
+nextflow run -resume --results results --bam_glob '/path/to/PBC16207_20250123_293t_1_1/PBC16207_20250123_293t_1_1.tagged.bam' /path/to/main.nf
+```
 
 ## Output
 
