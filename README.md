@@ -1,12 +1,12 @@
 # pre-SCAFE processing
 
-This is a small NextFlow pipeline that can be run to prepare ONT-sequenced 10x Genomics 3' GEX datasets for SCAFE. It assumes one has already run the official ONT pipeline on the dataset.
+This is code that can be run to prepare ONT-sequenced 10x Genomics 3' GEX datasets for SCAFE. It assumes one has already run the official ONT pipeline on the dataset.
 
 ## Steps
 
 The pipeline consists of two steps.
 
-The first step consists of several substeps, which together ensure the BAM file meets various expectations of SCAFE.
+The first step consists of several substeps, which together ensure the BAM file meets various expectations of SCAFE:
 
 1. The CIGAR string is updated to remove any hardclipping.
 2. The amount of softclipping at the beginning of the read is determined, and the read is skipped if there are more than 4 bps of softclipping. The official ONT pipeline leaves the 'GGG' trinucleotide from the last 3 basepairs of the TSO sequence at the 5' of the read (which will be trimmed below), and the mRNA cap is expected to result in a fourth 'G' (which SCAFE will look for). Therefore, many reads have 4 bps of softclipping. Softclipping is not well-handled within SCAFE, so we filter reads with extensive softclipping.
@@ -26,11 +26,29 @@ If you have `aws` CLI tool on your machine, you can download a portion of their 
 aws s3 sync --no-sign-request s3://ont-open-data/sc_gemx_2025.02/analysis/workflow_outputs/293t/293t_1_1/PBC16207_20250123_293t_1_1 PBC16207_20250123_293t_1_1
 ```
 
-## Dependencies
-
-You must have NextFlow and Singularity installed. NextFlow should be configured as appropriate for your system. The pipeline utilizes Singularity containers for all other dependencies.
-
 ## Running
+
+There are two ways to run the code -- as stand-alone python scripts, or as a small NextFlow pipeline.
+
+### Running as stand-alone python scripts
+
+If you wish to simply run the python scripts directly, you'll need python3 and samtools installed, as well as the following python packages: `pysam`, `numpy`, `pandas`, `matplotlib`, and `seaborn`.
+
+Using the example ONT BAM file above, you can run the two steps as follows:
+
+```
+# step 1
+python3 /path/to/bin/trim-for-scafe.py --input-bam /path/to/PBC16207_20250123_293t_1_1/PBC16207_20250123_293t_1_1.tagged.bam --output-bam trimmed.unsorted.bam --trim-to 100 --ggg-mismatches-allowed 1 --max-softclipping 4 2> log.txt
+samtools sort -m 3G -o trimmed.bam trimmed.unsorted.bam
+samtools index trimmed.bam
+
+# step 2
+python3 /path/to/bin/filter-bam-to-most-supported-5prime-ends.py --bam-in trimmed.bam --bam-out filtered.bam --prefix filtering.
+```
+
+### Running as a NextFlow pipeline
+
+If you have NextFlow and Singularity installed (and NextFlow is appropriately configured for your system), you can instead run the NextFlow pipeline. In this case, the pipeline utilizes Singularity containers for all other dependencies (there is no need to install python, python packages, or samtools).
 
 The NextFlow pipeline needs only the ONT BAM file as input. With the example dataset, the preprocessing can be run as follows:
 
@@ -38,8 +56,6 @@ The NextFlow pipeline needs only the ONT BAM file as input. With the example dat
 nextflow run -resume --results results --bam_glob '/path/to/PBC16207_20250123_293t_1_1/PBC16207_20250123_293t_1_1.tagged.bam' /path/to/main.nf
 ```
 
-## Output
-
-There will be two subdirectories output:
+There will be two output subdirectories in the `results` directory:
 1. `trimmed`. This is the output of step 1 above.
 2. `filtered`. This the the output of step 2 above. These BAM files should be used for SCAFE input.
