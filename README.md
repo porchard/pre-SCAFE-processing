@@ -13,7 +13,7 @@ The first step consists of several substeps, which together ensure the BAM file 
 3. The 5’ end of the read is expected to begin with ‘GGG’ (the last 3 basepairs of the TSO sequence; the rest of the TSO sequence is trimmed earlier in the pipeline). If it does not (allowing for one mismatch) the read is filtered out; if it does, the three bps at the 5’ end of the read are trimmed.
 4. The read is trimmed from the 3’ end until it is no longer than 100 bps.
 
-In the second step, we handle cases where multiple reads from the same nucleus and with the same UMI and gene assignment suggest different 5' ends. These likely represent technical artifacts, and can inflate the supposed support each TSS cluster gets in the SCAFE filtering step, as well as inflate SCAFE tCRE counts. We've found this to noticeably impact SCAFE results obtained from some libraries, and to have minimal impact for other libraries. To do this, we identify groups of reads with the same cell barcode (CB tag), UMI (UB tag), and gene assignment (GX tag), and check the 5' end positions. If they do not all nominate the same 5' end position, we determine the 5' end position with the most reads supporting it and keep only the corresponding reads. If two 5' end positions have equal support, we keep the most upstream one.
+In the second step -- which is optional but recommended -- we handle cases where multiple reads from the same nucleus and with the same UMI and gene assignment suggest different 5' ends. These likely represent technical artifacts, and can inflate the supposed support each TSS cluster gets in the SCAFE filtering step, as well as inflate SCAFE tCRE counts. We've found this to noticeably impact SCAFE results obtained from some libraries, and to have minimal impact for other libraries. To do this, we identify groups of reads with the same cell barcode (CB tag), UMI (UB tag), and gene assignment (GX tag), and check the 5' end positions. If they do not all nominate the same 5' end position, we determine the 5' end position with the most reads supporting it and keep only the corresponding reads. If two 5' end positions have equal support, we keep the most upstream one.
 
 
 ## Example data
@@ -45,6 +45,8 @@ samtools index trimmed.bam
 # step 2
 python3 /path/to/bin/filter-bam-to-most-supported-5prime-ends.py --bam-in trimmed.bam --bam-out filtered.bam --prefix filtering.
 ```
+
+`filtered.bam` is the file that should be used for SCAFE input.
 
 ### Running as a NextFlow pipeline
 
