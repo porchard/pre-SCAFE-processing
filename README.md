@@ -38,11 +38,15 @@ Using the example ONT BAM file above, you can run the two steps as follows:
 
 ```
 # step 1
+# this uses minimal memory, and should run fine on a laptop
+# should take ~2.5 hours on the example dataset
 python3 /path/to/bin/trim-for-scafe.py --input-bam /path/to/PBC16207_20250123_293t_1_1/PBC16207_20250123_293t_1_1.tagged.bam --output-bam trimmed.unsorted.bam --trim-to 100 --ggg-mismatches-allowed 1 --max-softclipping 4 2> log.txt
 samtools sort -m 3G -o trimmed.bam trimmed.unsorted.bam
 samtools index trimmed.bam
 
 # step 2
+# this uses considerable memory (~70-75GB on the example dataset) so is best run on a server
+# should take ~45 minutes on the example dataset
 python3 /path/to/bin/filter-bam-to-most-supported-5prime-ends.py --bam-in trimmed.bam --bam-out filtered.bam --prefix filtering.
 ```
 
