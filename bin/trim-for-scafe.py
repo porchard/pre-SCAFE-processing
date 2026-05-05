@@ -166,7 +166,7 @@ parser.add_argument('-i', '--input-bam', type=str, required=True, help='Input BA
 parser.add_argument('-o', '--output-bam', type=str, required=True, help='Output BAM file')
 parser.add_argument('-m', '--max-softclipping', type=int, default=50, help="Maximum number of softclipped bases allowed at the 5' end of the read (reads with more than this will be skipped) (default: 50)")
 parser.add_argument('-t', '--trim-to', type=int, default=100, help='Trim reads to this maximum length (default: 100 bp)')
-parser.add_argument('-k', '--keep-tags', type=str, nargs='+', default=['CB', 'CR', 'CY', 'UB', 'UR', 'UY', 'GN', 'TR'], help="Tags to keep in the output BAM file (default: CB CR CY UB UR UY GN TR); should correspond to tags that won't be invalidated by trimming")
+parser.add_argument('-k', '--keep-tags', type=str, nargs='+', default=['CB', 'CR', 'CY', 'UB', 'UR', 'UY', 'GN', 'GX', 'TR'], help="Tags to keep in the output BAM file (default: CB CR CY UB UR UY GN GX TR); should correspond to tags that won't be invalidated by trimming")
 parser.add_argument('-g', '--ggg-mismatches-allowed', type=int, default=1, help="Number of mismatches allowed in the expected 5' GGG sequence (reads with more than this will be skipped) (default: 1)")
 args = parser.parse_args()
 
